@@ -65,3 +65,36 @@ module.exports = defineConfig({
 查看效果
 ![Chrome 下运行 Service Worker 示例的结果](./img/separate.jpg)
 
+### 打包压缩图片
+首先安装 image-webpack-loader
+```
+yarn add compression-webpack-plugin -D (开发依赖)
+
+```  
+如果遇到打包失败（网速原因东西下载不完整导致）就使用cnpm安装
+```
+cnpm i image-webpack-loader -D
+```
+然后在vue.config.js文件中添加以下代码开启
+```javascript
+module.exports = defineConfig({
+  chainWebpack: (config) => {
+    config.module
+      .rule("images")
+      .test(/\.(png|jpe?g|gif)(\?.*)?$/)
+      .use("image-webpack-loader")
+      .loader("image-webpack-loader")
+      .options({ bypassOnDebug: true })
+      .end();
+  },
+});
+```
+随后在命令行运行
+```
+yarn build
+```
+可以看到打包产出了图片文件体积，比原文件体积压缩了有百分之70以上。<br/>
+`压缩前`
+![Chrome 下运行 Service Worker 示例的结果](./img/img1.jpg)
+`压缩后`
+![Chrome 下运行 Service Worker 示例的结果](./img/img2.png)
