@@ -15,3 +15,6 @@
   * [3 资源请求响应策略](offlineAndCache/3-respond-strategy.md)
   * [4 预缓存方案](offlineAndCache/4-precache.md)
   * [5 使用 Workbox](offlineAndCache/5-workbox.md)
+* [深入workerBox](workerBox/README.md)
+  * [1 问题](workerBox/problem/README.md)
+

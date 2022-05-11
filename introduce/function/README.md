@@ -1,5 +1,4 @@
 ### 功能
-
 ```
   -打包开启gzip压缩
   -打包分离公共代码
@@ -36,6 +35,7 @@ yarn build
   可以看到打包已经产出了gzip格式的文件，比原文件体积压缩了有百分之60以上。
 ![Chrome 下运行 Service Worker 示例的结果](./img/gzip.jpg)
 
+
 ### 打包分离公共代码
 在vue.config.js文件中添加一下代码
 ```javascript
@@ -64,6 +64,7 @@ module.exports = defineConfig({
 ```
 查看效果
 ![Chrome 下运行 Service Worker 示例的结果](./img/separate.jpg)
+
 
 ### 打包压缩图片
 首先安装 image-webpack-loader
