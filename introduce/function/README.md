@@ -157,6 +157,26 @@ $theme: #c44f41;
 ```
 
 ### 移动端布局（pxtorem）
+首先安装postcss-pxtorem
+
+```
+yarn add postcss-pxtorem -D (开发依赖)
+
+```
+
+然后在postcss.config.js中输入以下代码
+
+```js
+module.exports = {
+  plugins: {
+    "postcss-pxtorem": {
+      rootValue: 37.5,  // 375的设计稿是37.5 同理750设计稿为75
+      propList: ["*"],
+    },
+  },
+};
+```
+
 
 
 
