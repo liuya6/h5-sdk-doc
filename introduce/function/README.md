@@ -99,3 +99,74 @@ yarn build
 ![Chrome 下运行 Service Worker 示例的结果](./img/img1.jpg)
 `压缩后`
 ![Chrome 下运行 Service Worker 示例的结果](./img/img2.png)
+
+### 组件按需加载
+
+> 作用：为了防止首页加载文件过大，导致长时间白屏，影响用户体验
+
+```
+{
+    path: "/rank",
+    name: "ranking",
+    component: () => import("../views/Home/components/Ranking.vue"), // 按需加载引入组件
+    meta: {
+      keepAlive: true,
+    },
+}
+
+```
+
+### 全局scss变量
+> 作用：定义好全局主题色，加快开发速度
+
+首先安装style-resources-loader
+
+```
+yarn add style-resources-loader -D  // 开发依赖
+
+```
+
+然后在vue.config.js中添入一下代码
+
+```
+module.exports = defineConfig({
+  pluginOptions: {
+    "style-resources-loader": {
+      preProcessor: "scss",
+      patterns: [path.resolve(__dirname, `./src/style/theme/index.scss`)],
+    },
+  },
+});
+
+```
+
+使用方法：<br>
+index.scss内容
+```scss
+$theme: #c44f41;
+
+```
+其他vue文件中，可以直接使用index.scss定义的内容，不需要引入scss文件，如下所示
+
+```scss
+<style lang="scss" scoped>
+.test {
+  color: $theme;    
+}
+</style>
+```
+
+### 移动端布局（pxtorem）
+
+
+
+
+
+
+
+
+
+
+
+
+

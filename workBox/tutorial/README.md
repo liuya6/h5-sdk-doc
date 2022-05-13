@@ -1,7 +1,6 @@
-### WorkerBox
+### WorkBox
 
-Workbox 是 Google Chrome 团队推出的一套 PWA 的解决方案，这套解决方案当中包含了核心库和构建工具，因此我们可以利用 Workbox 实现 Service Worker 的快速开发。<br>
-本文会详细介绍worker的使用方法。
+本文会详细介绍workbox的使用方法。
 
 ### 引入方式
 
@@ -94,7 +93,7 @@ workbox.routing.registerRoute(
     workbox.strategies.cacheFirst({
         cacheName: 'images',
         plugins: [
-            new workbox.expiration.Plugin({
+            new workbox.ExpirationPlugin({
                 maxEntries: 60, // 最大的缓存数，超过之后则走 LRU 策略清除最老最少使用缓存
                 maxAgeSeconds: 30 * 24 * 60 * 60, // 这只最长缓存时间为 30 天
             }),
@@ -107,13 +106,12 @@ workbox.routing.registerRoute(
 预缓存功能可以在service worker安装前将一些静态文件提前缓存下来，这样就能保证service worker安装后可以直接存缓存中获取这些静态资源，可以通过以下代码实现。
 
 ```
-import {precacheAndRoute} from 'workbox-precaching';
-
-precacheAndRoute([  
+workbox.precaching.precacheAndRoute([  
     {url: '/index.html', revision: '383676' }, 
     {url: '/styles/app.0c9a31.css', revision: null},
     {url: '/scripts/app.0d5770.js', revision: null},
 ]);
+
 ```
 
 ### 路由功能
@@ -143,7 +141,7 @@ Workbox内部封装了以下五种缓存策略：
 ```javascript
 workbox.routing.registerRoute(
     match, // 匹配的路由
-    workbox.strategies.networkFirst()
+    workbox.strategies.NetworkFirst()
 );
 ```
 
@@ -153,7 +151,7 @@ workbox.routing.registerRoute(
 ```javascript
 workbox.routing.registerRoute(
     match, // 匹配的路由
-    workbox.strategies.cacheFirst()
+    workbox.strategies.CacheFirst()
 );
 ```
 
@@ -163,7 +161,7 @@ workbox.routing.registerRoute(
 ```javascript
 workbox.routing.registerRoute(
         match, // 匹配的路由
-        workbox.strategies.networkOnly()
+        workbox.strategies.NetworkOnly()
 );
 ```
 
@@ -173,7 +171,7 @@ workbox.routing.registerRoute(
 ```javascript
 workbox.routing.registerRoute(
     match, // 匹配的路由
-    workbox.strategies.networkOnly()
+    workbox.strategies.CacheOnly()
 );
 
 ```
@@ -184,7 +182,7 @@ workbox.routing.registerRoute(
 ```javascript
 workbox.routing.registerRoute(
     match, // 匹配的路由
-    workbox.strategies.staleWhileRevalidate()
+    workbox.strategies.StaleWhileRevalidate()
 );
 ```
 
@@ -206,21 +204,64 @@ workbox.routing.registerRoute(
         );
     }
 );
+
 ```
 
-
-无论使用何种策略，你都可以通过自定义一个缓存来使用或添加插件来定制路由的行为（以何种方式返回结果）。
-
-五种缓存策略使用方法一致，各适用于不同的场景，具体适用场景可在[离线指南](https://link.juejin.cn/?target=https%3A%2F%2Fdevelopers.google.cn%2Fweb%2Ffundamentals%2Finstant-and-offline%2Foffline-cookbook%2F%3Fhl%3Dzh_cn%23serving-suggestions)中查看。
+无论使用何种策略，你都可以通过自定义一个缓存来使用或添加插件来定制路由的行为（以何种方式返回结果）。<br>
+五种缓存策略使用方法一致，各适用于不同的场景，具体适用场景可在[离线指南](https://link.juejin.cn/?target=https%3A%2F%2Fdevelopers.google.cn%2Fweb%2Ffundamentals%2Finstant-and-offline%2Foffline-cookbook%2F%3Fhl%3Dzh_cn%23serving-suggestions)中查看。<br>
 
 ### 第三方请求的缓存
-如果有些请求的域和当前 Web 站点不一致，那可以被认为是第三方资源或请求，针对第三方请求的缓存，因为 Workbox 无法获取第三方路由请求的状态，当请求失败的情况下 workbox 也只能选择缓存错误的结果，所以 workbox 3 原则上默认不会缓存第三方请求的返回结果。也就是说，默认情况下如下的缓存策略是不会生效的：
+如果有些请求的域和当前 Web 站点不一致，那可以被认为是第三方资源或请求，针对第三方请求的缓存，因为 Workbox 无法获取第三方路由请求的状态，当请求失败的情况下 workbox 也只能选择缓存错误的结果，所以 workbox 原则上默认不会缓存第三方请求的返回结果。也就是说，默认情况下如下的缓存策略是不会生效的：<br>
 
+当然，并不是所有的策略在第三方请求上都不能使用，workbox 可以允许 networkFirst 和 stalteWhileRevalidate 缓存策略生效，因为这些策略会有规律的更新缓存的返回内容，毕竟每次请求后都会更新缓存内容，要比直接缓存安全的多。<br>
 ```javascript
 workbox.routing.registerRoute(
     'https://notzoumiaojiang.com/example-script.min.js',
-    workbox.strategies.cacheFirst(),
+    workbox.strategies.NetworkFirst(),
 );
 ```
 
-当然，并不是所有的策略在第三方请求上都不能使用，workbox 可以允许 networkFirst 和 stalteWhileRevalidate 缓存策略生效，因为这些策略会有规律的更新缓存的返回内容，毕竟每次请求后都会更新缓存内容，要比直接缓存安全的多。
+对于设置了 CORS 的跨域请求的图片资源，可以通过配置 fetchOptions 将策略中 Fetch API 的请求模式设置为 cors：
+
+```javascript
+workbox.routing.registerRoute(
+  /^https:\/\/third-party-site\.com\/.*\.(jpe?g|png)/,
+  new workbox.strategies.CacheFirst({
+    fetchOptions: {
+      mode: 'cors'
+    },
+    matchOptions: {
+      ignoreSearch: true // 假设图片资源缓存的存取需要忽略请求 URL 的 search 参数，可以通过设置 matchOptions 来实现
+    }
+  })
+)
+
+```
+
+
+### 删除缓存
+
+* 删除过期缓存
+每次进入页面，都需要删除掉已经过期的缓存，以免用户看到的还是旧的数据。
+
+```javascript
+  workbox.precaching.cleanupOutdatedCaches();
+
+```
+
+
+* 删除所有缓存
+删除所有缓存，直接使用cache,客户端自带的属性。
+
+```javascript
+caches.keys().then(function (cacheList) {
+    return Promise.all(
+      cacheList.map(function (cacheName) {
+        return caches.delete(cacheName);
+      })
+    );
+});
+
+```
+
+

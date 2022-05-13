@@ -25,10 +25,8 @@
     "github-buttons": {
       "buttons": [{
         "user": "liuya6",
-        "repo": "vue3-typescript-webpack",
-        "type": "star",
-        "size": "small",
-        "count": true
+        "repo": "h5-sdk-has-pwa",
+        "size": "small"
       }]
     },
     "sharing": {
