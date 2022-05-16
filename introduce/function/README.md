@@ -553,5 +553,5 @@ if (workbox) {
 
 ```
 
-本人有写了一篇service-worker文档,如果之前未接触过，可前往查阅[service-worker教程](https://service-worker-doc.vercel.app/)。
+如果之前未接触过，可前往查阅[service-worker教程](https://service-worker-doc.vercel.app/)。
 
